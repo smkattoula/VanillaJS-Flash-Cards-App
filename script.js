@@ -17,20 +17,22 @@ let currentActiveCard = 0;
 const cardsEl = [];
 
 // Create a variable that stores the card data
-const cardsData = [
-  {
-    question: "What is a variable?",
-    answer: "A container for a piece of data",
-  },
-  {
-    question: "What is PHP?",
-    answer: "A programming language",
-  },
-  {
-    question: "What is React?",
-    answer: "A JavaScript framework",
-  },
-];
+const cardsData = getCardsData();
+
+// const cardsData = [
+//   {
+//     question: "What is a variable?",
+//     answer: "A container for a piece of data",
+//   },
+//   {
+//     question: "What is PHP?",
+//     answer: "A programming language",
+//   },
+//   {
+//     question: "What is React?",
+//     answer: "A JavaScript framework",
+//   },
+// ];
 
 // Create a function that allows you to create all cards
 function createCards() {
@@ -74,6 +76,18 @@ function updateCurrentText() {
   currentEl.innerText = `${currentActiveCard + 1}/${cardsEl.length}`;
 }
 
+// Create a function that allows you to get cards from local storage
+function getCardsData() {
+  const cards = JSON.parse(localStorage.getItem("cards"));
+  return cards === null ? [] : cards;
+}
+
+// Create a function that allows you to add a card to local storage
+function setCardsData(cards) {
+  localStorage.setItem("cards", JSON.stringify(cards));
+  window.location.reload();
+}
+
 createCards();
 
 // Event listeners
@@ -104,4 +118,33 @@ prevBtn.addEventListener("click", () => {
   cardsEl[currentActiveCard].className = "card active";
 
   updateCurrentText();
+});
+
+showBtn.addEventListener("click", () => addContainer.classList.add("show"));
+
+hideBtn.addEventListener("click", () => addContainer.classList.remove("show"));
+
+addCardBtn.addEventListener("click", () => {
+  const question = questionEl.value;
+  const answer = answerEl.value;
+
+  if (question.trim() && answer.trim()) {
+    const newCard = { question, answer };
+
+    createCard(newCard);
+
+    questionEl.value = "";
+    answerEl.value = "";
+
+    addContainer.classList.remove("show");
+
+    cardsData.push(newCard);
+    setCardsData(cardsData);
+  }
+});
+
+clearBtn.addEventListener("click", () => {
+  localStorage.clear();
+  cardsContainer.innerHTML = "";
+  window.location.reload();
 });
